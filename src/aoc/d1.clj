@@ -4,16 +4,14 @@
 
 (defn day1
   []
-  (let [input    (util/read-input 1)
-        calories (->> (str/split input #"\n\n")
-                      (map #(->> (str/split-lines %)
-                                 (map parse-long)
-                                 (reduce +))))]
+  (let [calories (->> (str/split (util/read-input 1) #"\n\n")
+                      (map #(transduce (map parse-long)
+                                       +
+                                       (str/split-lines %))))]
     ;; part1
     (println (reduce max calories))
     ;; part2
-    (->> calories
-         (sort #(compare %2 %1))
-         (take 3)
-         (reduce +)
-         println)))
+    (-> (comp (util/xf-sort #(compare %2 %1))
+              (take 3))
+        (transduce + calories)
+        println)))

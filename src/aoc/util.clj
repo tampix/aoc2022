@@ -11,10 +11,6 @@
   [day]
   (str/split-lines (read-input day)))
 
-(defn parse-long
-  [s]
-  (Long/parseLong s))
-
 (defn read-input-ints
   [day]
   (map parse-long (read-input-lines day)))
@@ -42,3 +38,22 @@
      (mapv #(apply % []) fs)))
   ([fs acc coll]
    (reduce (fn [acc cur] (mapv #(%1 %2 cur) fs acc)) acc coll)))
+
+;; Taken from https://gist.github.com/matthewdowney/380dd28c1046d4919a8c59a523f804fd
+(defn xf-sort
+  "A sorting transducer. Mostly a syntactic improvement to allow composition of
+  sorting with the standard transducers, but also provides a slight performance
+  increase over transducing, sorting, and then continuing to transduce."
+  ([]
+   (xf-sort compare))
+  ([cmp]
+   (fn [rf]
+     (let [temp-list (java.util.ArrayList.)]
+       (fn
+         ([]
+          (rf))
+         ([xs]
+          (reduce rf xs (sort cmp (vec (.toArray temp-list)))))
+         ([xs x]
+          (.add temp-list x)
+          xs))))))
