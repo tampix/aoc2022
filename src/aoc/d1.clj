@@ -1,6 +1,7 @@
 (ns aoc.d1
   (:require [clojure.string :as str]
-            [aoc.util :as util]))
+            [aoc.util :as util]
+            [net.cgrand.xforms :as xf]))
 
 (defn day1
   []
@@ -11,7 +12,7 @@
     ;; part1
     (println (reduce max calories))
     ;; part2
-    (-> (comp (util/xf-sort #(compare %2 %1))
+    (-> (comp (xf/sort #(compare %2 %1))
               (take 3))
         (transduce + calories)
         println)))

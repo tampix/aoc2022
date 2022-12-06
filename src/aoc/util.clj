@@ -1,11 +1,16 @@
 (ns aoc.util
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.java.io :as io])
+  (:import java.io.ByteArrayOutputStream
+           java.net.URL))
 
-(defn read-input
+(defn- ^URL input
   [day]
-  (->> (str "d" day ".txt")
-       clojure.java.io/resource
-       slurp))
+  (io/resource (str "d" day ".txt")))
+
+(defn ^String read-input
+  [day]
+  (slurp (input day)))
 
 (defn read-input-lines
   [day]
@@ -14,6 +19,13 @@
 (defn read-input-ints
   [day]
   (map parse-long (read-input-lines day)))
+
+(defn ^bytes read-input-bytes
+  [day]
+  (with-open [in  (io/input-stream (input day))
+              out (ByteArrayOutputStream.)]
+    (io/copy in out)
+    (.toByteArray out)))
 
 (defn find-sum
   "Return any pair of elements from `coll` where the sum of those equals
@@ -38,22 +50,3 @@
      (mapv #(apply % []) fs)))
   ([fs acc coll]
    (reduce (fn [acc cur] (mapv #(%1 %2 cur) fs acc)) acc coll)))
-
-;; Taken from https://gist.github.com/matthewdowney/380dd28c1046d4919a8c59a523f804fd
-(defn xf-sort
-  "A sorting transducer. Mostly a syntactic improvement to allow composition of
-  sorting with the standard transducers, but also provides a slight performance
-  increase over transducing, sorting, and then continuing to transduce."
-  ([]
-   (xf-sort compare))
-  ([cmp]
-   (fn [rf]
-     (let [temp-list (java.util.ArrayList.)]
-       (fn
-         ([]
-          (rf))
-         ([xs]
-          (reduce rf xs (sort cmp (vec (.toArray temp-list)))))
-         ([xs x]
-          (.add temp-list x)
-          xs))))))

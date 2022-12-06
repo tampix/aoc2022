@@ -5,5 +5,6 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :main aoc.core
   :dependencies [[org.clojure/clojure "1.11.0"]
-                 [criterium "0.4.6"]]
+                 [criterium "0.4.6"]
+                 [net.cgrand/xforms "0.19.4"]]
   :repl-options {:init-ns aoc.core})
